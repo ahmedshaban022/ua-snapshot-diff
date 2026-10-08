@@ -1,0 +1,5 @@
+.mimosa/
+node_modules/
+test/.profile/
+.dbg*/
+test/.dbg*/

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>UA Projects — Change snapshot demo</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font: 14px/1.5 system-ui, sans-serif; color: #e5e7eb; background: #111827; }
+    header { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: #1f2937; border-bottom: 1px solid #374151; position: sticky; top: 0; }
+    .logo { font-weight: 700; color: #a78bfa; letter-spacing: .5px; }
+    main { padding: 24px 18px; max-width: 760px; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+    .card h3 { margin: 0 0 6px; font-size: 13px; color: #a78bfa; }
+    .kv { font-size: 13px; color: #9ca3af; }
+    .kv b { color: #e5e7eb; }
+    #hero-title { width: 420px; }
+    #wobble { width: 260px; transition: none; }
+    .spacer { height: 620px; }
+    #toast { display: none; background: #064e3b; border: 1px solid #065f46; color: #a7f3d0; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; }
+    /* Store-screenshot overlay mock (?shot=1) */
+    #mock { position: fixed; top: 46px; right: 24px; width: 300px; background: #111827; border: 1px solid #374151; border-radius: 12px; padding: 14px; box-shadow: 0 24px 60px #000a; display: none; z-index: 10; }
+    #mock h1 { font-size: 13px; margin: 0 0 8px; color: #a78bfa; letter-spacing: .4px; }
+    #mock input { width: 100%; background: #1f2937; color: #e5e7eb; border: 1px solid #374151; border-radius: 6px; padding: 5px 7px; font: 12px system-ui; margin-bottom: 8px; }
+    #mock .row { display: flex; gap: 8px; }
+    #mock button { padding: 8px 10px; border: 0; border-radius: 8px; font: 600 12px system-ui; }
+    #mock .cap { background: #7c3aed; color: #fff; flex: 1; }
+    #mock .op { background: #374151; color: #e5e7eb; }
+    #mock .snap { display: flex; align-items: center; gap: 8px; background: #1f2937; border-radius: 8px; padding: 6px 8px; margin-bottom: 4px; }
+    #mock .snap.sel { outline: 1px solid #7c3aed; }
+    #mock .dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #6b7280; }
+    #mock .snap.sel .dot { border-color: #7c3aed; background: #7c3aed; }
+    #mock .snap .l { font-size: 12px; }
+    #mock .snap .s { font-size: 10px; color: #6b7280; }
+    #mock .diff { width: 100%; background: #0e7490; color: #fff; padding: 8px 10px; border: 0; border-radius: 8px; font: 600 12px system-ui; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo">UA PROJECTS</span>
+    <span style="font-size:12px;color:#9ca3af">change-snapshot demo — tall page (3 tiles), sticky header</span>
+  </header>
+  <main>
+    <div id="toast">Project saved ✓</div>
+    <div class="card">
+      <h3 id="hero-title">Project Alpha — Q3 financial consolidation</h3>
+      <div class="kv">Invoiced: <b>EGP 184,300</b> · Paid: <b>EGP 121,000</b> · Overdue: <b id="overdue">EGP 8,200</b></div>
+    </div>
+    <div class="card" id="wobble">
+      <h3>Budget box</h3>
+      <div class="kv">This card gets wider in the diff</div>
+    </div>
+    <div class="card" id="doomed">
+      <h3>Deprecated panel</h3>
+      <div class="kv">This card is removed in the diff</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="card">
+      <h3>Section 2</h3>
+      <div class="kv">Below the fold — tests the scroll-and-stitch tiles.</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="card">
+      <h3>Section 3 — bottom</h3>
+      <div class="kv">Pinned bottom tile coverage.</div>
+    </div>
+  </main>
+
+  <div id="mock">
+    <h1>UA CHANGE SNAPSHOT</h1>
+    <input value="app.example.com/projects" />
+    <div class="row">
+      <button class="cap">Capture</button>
+      <button class="op">Viewer ↗</button>
+    </div>
+    <div class="snap sel"><span class="dot"></span><div><div class="l">pre-deploy v3.13</div><div class="s">Oct 8, 08:12 · 214 elements</div></div></div>
+    <div class="snap"><span class="dot"></span><div><div class="l">QA check</div><div class="s">Oct 7, 17:40 · 209 elements</div></div></div>
+    <button class="diff">Capture &amp; diff vs baseline</button>
+  </div>
+
+  <script>
+    // Test hooks: the e2e mutates the page between snapshots through these.
+    window.__mutate = {
+      text() {
+        document.getElementById('hero-title').textContent = 'Project Alpha — Q4 financial consolidation (updated)';
+        document.getElementById('overdue').textContent = 'EGP 6,400';
+      },
+      geom() {
+        document.getElementById('wobble').style.width = '520px';
+      },
+      add() {
+        document.getElementById('toast').style.display = 'block';
+      },
+      remove() {
+        document.getElementById('doomed').remove();
+      }
+    };
+    if (new URLSearchParams(location.search).get('shot') === '1') {
+      document.getElementById('mock').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

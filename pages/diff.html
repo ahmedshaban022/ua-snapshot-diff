@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font: 14px/1.5 system-ui, sans-serif; color: #e5e7eb; background: #111827; display: flex; flex-direction: column; height: 100vh; }
+    header {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; background: #0b1220; border-bottom: 1px solid #374151;
+    }
+    header h1 { font-size: 13px; margin: 0; color: #a78bfa; letter-spacing: .4px; }
+    select { background: #1f2937; color: #e5e7eb; border: 1px solid #374151; border-radius: 6px; padding: 4px 8px; font: 12px system-ui; max-width: 260px; }
+    button { padding: 6px 12px; border: 0; border-radius: 8px; cursor: pointer; font: 600 12px system-ui, sans-serif; background: #374151; color: #e5e7eb; }
+    button:hover { background: #4b5563; }
+    button.primary { background: #7c3aed; color: #fff; }
+    button.primary:hover { background: #6d28d9; }
+    .mode { display: flex; gap: 0; }
+    .mode button { border-radius: 0; }
+    .mode button:first-child { border-radius: 8px 0 0 8px; }
+    .mode button:last-child { border-radius: 0 8px 8px 0; }
+    .mode button.sel { background: #7c3aed; color: #fff; }
+    label.tog { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #9ca3af; cursor: pointer; }
+    input[type="checkbox"] { accent-color: #7c3aed; }
+    input[type="range"] { accent-color: #7c3aed; width: 110px; }
+    .body { flex: 1; display: flex; min-height: 0; }
+    .viewer { flex: 1; overflow: auto; padding: 16px; }
+    .stage { position: relative; margin: 0 auto; width: max-content; display: flex; gap: 18px; }
+    .fig { position: relative; }
+    .fig .cap { font-size: 11px; color: #6b7280; padding: 4px 0; }
+    .fig img { display: block; border: 1px solid #374151; border-radius: 4px; background: #0b1220; }
+    .fig .boxes { position: absolute; inset: 0; pointer-events: none; }
+    .fig .boxes .b { position: absolute; border: 2px solid; pointer-events: auto; cursor: pointer; }
+    .fig .boxes .b.pixel { border-color: #22d3ee; background: #22d3ee22; }
+    .fig .boxes .b.dom { border-color: #a78bfa; background: #a78bfa22; }
+    .fig .boxes .b.removed { border-color: #f87171; background: #f8717122; }
+    .fig .boxes .b.flash { outline: 3px solid #fbbf24; }
+    aside { width: 330px; flex: none; background: #0b1220; border-left: 1px solid #374151; padding: 14px; overflow: auto; }
+    aside h2 { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: .8px; margin: 4px 0 8px; }
+    .sum { font-size: 12px; color: #9ca3af; margin-bottom: 12px; }
+    .sum b { color: #e5e7eb; }
+    .issue { padding: 7px 9px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; background: #111827; border: 1px solid #1f2937; }
+    .issue:hover { border-color: #7c3aed; }
+    .issue .k { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .issue .k.text { color: #a78bfa; } .issue .k.style { color: #22d3ee; } .issue .k.geom { color: #fbbf24; }
+    .issue .k.removed { color: #f87171; } .issue .k.added { color: #4ade80; } .issue .k.pixel { color: #22d3ee; }
+    .issue .d { font-size: 12px; color: #d1d5db; font-family: ui-monospace, Consolas, monospace; }
+    .empty { color: #6b7280; font-size: 13px; padding: 30px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CHANGE DIFF</h1>
+    <select id="group" title="Page (URL group)"></select>
+    <select id="pickA" title="Baseline (A)"></select>
+    <span style="color:#6b7280">vs</span>
+    <select id="pickB" title="Compare (B)"></select>
+    <div class="mode">
+      <button id="side" class="sel">Side by side</button>
+      <button id="overlay">Overlay</button>
+    </div>
+    <label class="tog">B opacity <input id="opacity" type="range" min="0" max="100" value="100" /></label>
+    <label class="tog"><input id="showPixel" type="checkbox" checked /> visual</label>
+    <label class="tog"><input id="showDom" type="checkbox" checked /> DOM</label>
+    <button id="copymd" class="primary">Copy summary</button>
+    <button id="export">Export overlay PNG</button>
+  </header>
+  <div class="body">
+    <div class="viewer"><div class="stage" id="stage"></div></div>
+    <aside>
+      <h2>Changes</h2>
+      <div class="sum" id="sum"></div>
+      <div id="issues"></div>
+    </aside>
+  </div>
+  <script type="module" src="diff.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "UA Change Snapshot",
+  "short_name": "UA Change Snapshot",
+  "version": "1.0.0",
+  "description": "Capture a full-page screenshot plus a normalized DOM snapshot, then re-capture after a deploy and get a highlighted visual + DOM diff with a copy-ready markdown summary.",
+  "permissions": ["activeTab", "scripting", "storage", "unlimitedStorage", "contextMenus"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "UA Change Snapshot (Alt+Shift+S to capture)",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "capture": {
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
+      "description": "Capture a snapshot of the current page"
+    }
+  }
+}
