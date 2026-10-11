@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Screenshot library · UA</title><link rel="stylesheet" href="screenshot.css"></head>
+<body>
+  <header><div><h1>Screenshot library</h1><p id="meta">Your captures stay on this device.</p></div><div class="toolbar"><button id="fit" class="selected" aria-pressed="true">Fit width</button><button id="actual" aria-pressed="false">Actual size</button><button id="compare">Compare changes</button><a id="download" class="primary" download>Download PNG</a></div></header>
+  <div class="workspace"><aside><label for="filter">Find a screenshot</label><input id="filter" type="search" placeholder="Search by name or page"><div id="list" aria-label="Saved screenshots"></div></aside><main><div id="empty" class="empty"><h2>No screenshots yet</h2><p>Open the extension on a webpage and choose how many screens to capture.</p></div><div id="notice" role="status" hidden></div><div id="image-stage" hidden><img id="image" alt="Captured webpage"></div></main></div>
+  <script type="module" src="screenshot.js"></script>
+</body></html>

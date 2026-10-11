@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "UA Change Snapshot",
   "short_name": "UA Change Snapshot",
-  "version": "1.0.0",
-  "description": "Capture a full-page screenshot plus a normalized DOM snapshot, then re-capture after a deploy and get a highlighted visual + DOM diff with a copy-ready markdown summary.",
+  "version": "1.1.2",
+  "description": "Capture one screen, several screens, or a full webpage. Preview and download PNGs, then compare saved screenshots and DOM changes after a deploy.",
   "permissions": ["activeTab", "scripting", "storage", "unlimitedStorage", "contextMenus"],
   "background": {
     "service_worker": "background.js",

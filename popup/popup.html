@@ -1,65 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <style>
-    :root { color-scheme: dark; }
-    body {
-      width: 300px; margin: 0; padding: 14px;
-      font: 13px/1.4 system-ui, sans-serif; color: #e5e7eb;
-      background: #111827;
-    }
-    h1 { font-size: 13px; margin: 0 0 10px; color: #a78bfa; letter-spacing: .4px; }
-    .page { font-size: 11px; color: #6b7280; margin: -6px 0 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .row { display: flex; gap: 8px; margin-bottom: 10px; }
-    button {
-      padding: 8px 10px; border: 0; border-radius: 8px; cursor: pointer;
-      font: 600 12px system-ui, sans-serif;
-    }
-    #capture { flex: 1; background: #7c3aed; color: #fff; }
-    #capture:hover { background: #6d28d9; }
-    #open { background: #374151; color: #e5e7eb; }
-    #open:hover { background: #4b5563; }
-    input[type="text"] {
-      width: 100%; background: #1f2937; color: #e5e7eb; border: 1px solid #374151;
-      border-radius: 6px; padding: 5px 7px; font: 12px system-ui; margin-bottom: 8px;
-    }
-    h2 { font-size: 10px; margin: 12px 0 6px; color: #6b7280; text-transform: uppercase; letter-spacing: .8px; }
-    .snap {
-      display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 4px;
-      background: #1f2937; border-radius: 8px; cursor: pointer;
-    }
-    .snap.sel { outline: 1px solid #7c3aed; }
-    .snap .radio { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #6b7280; flex: none; }
-    .snap.sel .radio { border-color: #7c3aed; background: #7c3aed; }
-    .snap .meta { flex: 1; min-width: 0; }
-    .snap .lbl { font-size: 12px; color: #e5e7eb; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .snap .sub { font-size: 10px; color: #6b7280; }
-    .snap .del { background: none; border: 0; color: #9ca3af; cursor: pointer; font-size: 13px; padding: 0 2px; }
-    .snap .del:hover { color: #f87171; }
-    #diffbtn { width: 100%; background: #0e7490; color: #fff; margin-bottom: 8px; }
-    #diffbtn:hover { background: #155e75; }
-    #diffbtn:disabled { background: #374151; color: #6b7280; cursor: default; }
-    .empty { color: #6b7280; font-size: 11px; }
-    #stats { margin-top: 8px; font-size: 12px; color: #9ca3af; min-height: 16px; }
-    #stats b { color: #22d3ee; }
-    .hint { margin-top: 8px; font-size: 11px; color: #6b7280; }
-    kbd { background: #1f2937; border-radius: 4px; padding: 1px 5px; font-size: 10px; }
-  </style>
-</head>
-<body>
-  <h1>UA CHANGE SNAPSHOT</h1>
-  <div class="page" id="page">…</div>
-  <input id="label" type="text" placeholder="Snapshot label (e.g. pre-deploy v3.14)" maxlength="60" />
-  <div class="row">
-    <button id="capture">Capture</button>
-    <button id="open">Viewer ↗</button>
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Screenshot · UA</title><link rel="stylesheet" href="popup.css">
+</head><body>
+  <header><div class="brand"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M10 3H5a2 2 0 0 0-2 2v5m19-7h5a2 2 0 0 1 2 2v5M3 22v5a2 2 0 0 0 2 2h5m19-7v5a2 2 0 0 1-2 2h-5M9 9h14v14H9z"/></svg><div><h1>Screenshot</h1><span>UA Change Snapshot</span></div></div><button id="open" class="quiet" type="button">Library</button></header>
+  <main>
+    <div id="page" class="page">Finding your page…</div>
+    <fieldset id="sizes"><legend>How much to capture?</legend>
+      <label class="choice"><input type="radio" name="mode" value="viewport" checked><span class="frame-icon one" aria-hidden="true"></span><span><strong>One screen</strong><small>Exactly what you see right now</small></span></label>
+      <label class="choice"><input type="radio" name="mode" value="screens"><span class="frame-icon many" aria-hidden="true"></span><span><strong>More screens</strong><small>Choose how far down the page to go</small></span></label>
+      <label class="choice"><input type="radio" name="mode" value="full"><span class="frame-icon full" aria-hidden="true"></span><span><strong>Full page</strong><small>From the top to the bottom</small></span></label>
+    </fieldset>
+    <div id="range" class="range" hidden>
+      <div class="range-row"><label for="count">Number of screens</label><div class="stepper"><button id="less" type="button" aria-label="One fewer screen">−</button><input id="count" type="number" min="1" max="20" value="3" aria-describedby="range-note"><button id="more" type="button" aria-label="One more screen">+</button></div></div>
+      <div class="range-row"><label for="start">Start at</label><select id="start"><option value="current">My current position</option><option value="top">Top of the page</option></select></div>
+      <p id="range-note">Screens are joined into one long image. Stops at the page bottom.</p>
+    </div>
+    <div class="name-field"><label for="label">Screenshot name <span>optional</span></label><input id="label" type="text" maxlength="60" placeholder="Use the page name"></div>
+    <section id="result" class="result" hidden aria-label="Captured screenshot"><button id="preview-thumb" class="thumbnail" type="button" aria-label="Preview the latest screenshot"><img id="thumbnail" alt="Latest screenshot"></button><div class="result-info"><strong>Screenshot ready</strong><span id="dimensions"></span><div class="result-actions"><button id="preview" class="quiet" type="button">Preview</button><a id="download" class="download" download>Download PNG</a></div></div></section>
+    <details id="history"><summary>Saved on this page <span id="saved-count">0</span></summary><div id="list"></div></details>
+    <details id="compare"><summary>Compare changes</summary><p>Choose a saved screenshot as your baseline, then capture again using the same size and start position.</p><select id="baseline" aria-label="Comparison baseline"><option value="">Choose a baseline</option></select><button id="diffbtn" class="secondary" type="button" disabled>Capture &amp; compare</button></details>
+  </main>
+  <div class="capture-dock">
+    <button id="capture" class="primary" type="button" disabled>Capture one screen</button>
+    <div id="progress-box" class="progress-box" hidden><div class="progress-heading"><span id="progress-label">Preparing…</span><button id="cancel" class="quiet" type="button">Cancel</button></div><progress id="progress" value="0" max="1" aria-label="Screenshot progress"></progress><p>Keep this page active. Your scroll position will be restored.</p></div>
+    <div id="stats" class="status" role="status" aria-live="polite"></div>
   </div>
-  <h2>This page's snapshots</h2>
-  <div id="list"></div>
-  <button id="diffbtn" disabled>Capture &amp; diff vs baseline</button>
-  <div id="stats"></div>
-  <div class="hint">Shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>, or right-click the page.<br />Select a snapshot's dot to make it the baseline.</div>
+  <footer><span><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></span><span>Uses your last capture size</span></footer>
   <script type="module" src="popup.js"></script>
-</body>
-</html>
+</body></html>

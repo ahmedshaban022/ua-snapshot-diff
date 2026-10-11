@@ -275,12 +275,14 @@ $('export').addEventListener('click', async () => {
   if (!snapA || !snapB) return;
   const imgA = new Image();
   const imgB = new Image();
-  await new Promise((res, rej) => {
-    imgA.onload = imgB.onload = res;
-    imgA.onerror = imgB.onerror = rej;
-    imgA.src = snapA.png;
-    imgB.src = snapB.png;
-  });
+  const loaded = (img) =>
+    new Promise((res, rej) => {
+      img.onload = res;
+      img.onerror = rej;
+    });
+  imgA.src = snapA.png;
+  imgB.src = snapB.png;
+  await Promise.all([loaded(imgA), loaded(imgB)]);
   const canvas = document.createElement('canvas');
   canvas.width = imgB.width;
   canvas.height = imgB.height;

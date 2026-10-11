@@ -14,7 +14,10 @@ export async function ctl(tabId, action, arg) {
     func: (action, arg) => {
       const c = window.UASnapCtl;
       if (!c || !c[action]) return { error: 'not-loaded' };
-      return Promise.resolve(c[action](arg)).catch(() => ({ error: 'action failed' }));
+      // an array payload carries positional arguments; anything else is the
+      // single argument itself
+      const call = Array.isArray(arg) ? c[action](...arg) : c[action](arg);
+      return Promise.resolve(call).catch(() => ({ error: 'action failed' }));
     },
     // undefined is not structured-cloneable — null is the neutral arg
     args: [action, arg === undefined ? null : arg]

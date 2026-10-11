@@ -20,42 +20,62 @@
 
   UAS.state = UAS.state || null;
 
-  UAS.prepare = function () {
+  UAS.prepare = function (options) {
     if (UAS.state) UAS.restore(); // defensive: never double-prepare
+    const o = options || { mode: 'full' };
     const doc = document.documentElement;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = CSS;
-    (document.head || doc).appendChild(style);
+    const style = o.mode === 'viewport' ? null : document.createElement('style');
+    if (style) {
+      style.id = STYLE_ID;
+      style.textContent = CSS;
+      (document.head || doc).appendChild(style);
+    }
 
     let fixedCount = 0;
-    const all = document.querySelectorAll('body *');
+    const fixed = [];
+    const all = o.mode === 'viewport' ? [] : document.querySelectorAll('body *');
     for (let i = 0; i < all.length && fixedCount < 4000; i++) {
       const el = all[i];
       const cs = getComputedStyle(el);
       if (cs.position === 'fixed' || cs.position === 'sticky') {
+        fixed.push([el, el.getAttribute('data-uasb-fixed')]);
         el.setAttribute('data-uasb-fixed', '1');
         fixedCount++;
       }
     }
 
-    UAS.state = { scrollTop: window.scrollY, scrollLeft: window.scrollX, style };
-    doc.classList.add('uasb-capture');
-    const dom = window.UASnapDom ? window.UASnapDom.serialize(document.body) : { sig: [], count: 0, truncated: false };
-    return {
-      ok: true,
-      scrollHeight: doc.scrollHeight,
-      viewportWidth: window.innerWidth,
-      viewportHeight: window.innerHeight,
-      fixed: fixedCount,
-      dom
-    };
+    UAS.state = { scrollTop: window.scrollY, scrollLeft: window.scrollX, style, fixed,
+      hadCapture: doc.classList.contains('uasb-capture'), hadHidden: doc.classList.contains('uasb-hide-fixed') };
+    if (style) doc.classList.add('uasb-capture');
+    if (o.mode !== 'viewport') {
+      const y = o.mode === 'full' || o.start === 'top' ? 0 : UAS.state.scrollTop;
+      window.scrollTo({ left: 0, top: y, behavior: 'instant' });
+    }
+    return new Promise((resolve) =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          const dom = window.UASnapDom
+            ? window.UASnapDom.serialize(document.body)
+            : { sig: [], count: 0, truncated: false };
+          resolve({
+            ok: true,
+            scrollHeight: doc.scrollHeight,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+            startY: window.scrollY,
+            startX: window.scrollX,
+            fixed: fixedCount,
+            dom
+          });
+        })
+      )
+    );
   };
 
   UAS.step = function (y, hideFixed) {
     const doc = document.documentElement;
     doc.classList.toggle('uasb-hide-fixed', !!hideFixed);
-    window.scrollTo(0, y);
+    window.scrollTo({ left: 0, top: y, behavior: 'instant' });
     return new Promise((resolve) =>
       // two rAFs: one for the scroll, one for the paint
       requestAnimationFrame(() => requestAnimationFrame(() => resolve({ y: window.scrollY })))
@@ -65,10 +85,14 @@
   UAS.restore = function () {
     const s = UAS.state;
     if (!s) return { ok: true };
-    document.documentElement.classList.remove('uasb-capture', 'uasb-hide-fixed');
+    document.documentElement.classList.toggle('uasb-capture', s.hadCapture);
+    document.documentElement.classList.toggle('uasb-hide-fixed', s.hadHidden);
     if (s.style && s.style.isConnected) s.style.remove();
-    for (const el of document.querySelectorAll('[data-uasb-fixed]')) el.removeAttribute('data-uasb-fixed');
-    window.scrollTo(s.scrollLeft, s.scrollTop);
+    for (const [el, previous] of s.fixed) {
+      if (previous == null) el.removeAttribute('data-uasb-fixed');
+      else el.setAttribute('data-uasb-fixed', previous);
+    }
+    window.scrollTo({ left: s.scrollLeft, top: s.scrollTop, behavior: 'instant' });
     UAS.state = null;
     return { ok: true };
   };
